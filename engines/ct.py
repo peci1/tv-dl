@@ -79,7 +79,7 @@ class CtEngine:
         header = { 
             "Content-type": "application/x-www-form-urlencoded"        
         }
-        req = urllib.request.Request('http://www.ceskatelevize.cz/ivysilani/ajax/get-client-playlist', bytes(data, 'utf-8'), header )
+        req = urllib.request.Request('https://www.ceskatelevize.cz/ivysilani/ajax/get-client-playlist', bytes(data, 'utf-8'), header )
         data = json.loads(urlopen(req).read().decode('utf-8'))
         url = urllib.parse.unquote(data['url'])
                 
