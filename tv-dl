@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse,os,sys,re,logging
+import ssl
 
 class TVDownloader:
     def __init__(self, args):
@@ -27,7 +28,7 @@ class TVDownloader:
     def main(self):
         self.import_engines(os.path.join(self.codedir, 'engines'))
         e = self.get_engine(self.args.URL)[2](self.args.URL)
-    
+
         if self.args.movie == "list":
             for m in e.movies():
                 print(m[0]+'\t'+m[1], file=sys.stderr)
@@ -66,10 +67,10 @@ class TVDownloader:
         else:
             outfile = os.path.join('', d[1])
         
-        self.download(d, outfile)
+        self.download(d, outfile, self.args.insecure)
     
     @classmethod
-    def download(cls, d, outfile):
+    def download(cls, d, outfile, disable_ssl):
         cmd = []
         if d[0] == 'rtmp':
             args = ''
@@ -89,16 +90,20 @@ class TVDownloader:
             cmd.append('rtmpdump -r "{}" -o "{}" {}'.format(parms['url'], outfile, args))
     
         elif d[0] == 'http':
+            wget_ssl_settings = ''
+            if disable_ssl:
+                wget_ssl_settings = '--no-check-certificate'
+
             if type(d[2]['url']) is list:
                 urlListFileName = '~tmp'
                 with open(urlListFileName, 'w') as urlListFile:
                     for url in d[2]['url']:
                         urlListFile.write(url + '\n')
-                cmd.append('wget -O "{}" -i "{}"'.format(d[1], urlListFileName))
+                cmd.append('wget {} -O "{}" -i "{}"'.format(wget_ssl_settings, d[1], urlListFileName))
                 cmd.append('rm "{}"'.format(urlListFileName))
                 cmd.append('del "{}"'.format(urlListFileName))
             else:
-                cmd.append('wget -O "{}" "{}"'.format(d[1], d[2]['url']))
+                cmd.append('wget {} -O "{}" "{}"'.format(wget_ssl_settings, d[1], d[2]['url']))
             
         elif d[0] == "text":
             open(outfile, 'wb').write(d[2])
@@ -124,6 +129,7 @@ if __name__ == "__main__":
     parser.add_argument('-D', '--debug', action="store_const",
         dest='loglevel', const=logging.DEBUG,
         help="zapíná debugovací zprávy")
+    parser.add_argument('-k', '--insecure', action="store_true", help="neověřovat SSL/TLS certifikát (na vlastní nebezpečí)")
     parser.set_defaults(loglevel=logging.WARNING)
     args = parser.parse_args()
 
@@ -135,6 +141,9 @@ if __name__ == "__main__":
     for item in args.__dict__.items():
         log.debug(' * {0} = {1}'.format(*item))
     log.debug('')
+
+    if args.insecure:
+        ssl._create_default_https_context = ssl._create_unverified_context
    
     try: 
         downloader = TVDownloader(args)
