@@ -7,14 +7,12 @@ Závislosti
 ----------
 
 * Python >= 3.2
-* wget
 
 Podporované systémy
 -------------------
 
 * Linux
 * Windows
-    * wget není standardní součástí Windows, ale existuje několik způsobů, jak ho získat: GNUWin32, Cygwin, MinGW, Bash on Windows...
 * (Mac OS - netestováno, ale mělo by fungovat)
 
 Podporované archivy

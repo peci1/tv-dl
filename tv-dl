@@ -3,6 +3,10 @@
 
 import argparse,os,sys,re,logging
 import ssl
+import progressbar
+import requests
+import warnings
+
 
 class TVDownloader:
     def __init__(self, args):
@@ -25,6 +29,28 @@ class TVDownloader:
             if re.match(e[1], url):
                 return e
         raise ValueError("Nebyl nalezen žádný engine podporující tuto URL")
+
+    def download_urls(self, urls, outfile, disable_ssl):
+        num_urls = len(urls)
+        urls_done = 0
+
+        bar = progressbar.ProgressBar().start()
+        bar.maxval = num_urls * 10
+
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            with open(outfile, 'wb') as fd:
+                for url in urls:
+                    r = requests.get(url, stream=True, verify=not disable_ssl)
+                    content_length = int(r.headers['Content-Length'])
+                    chunk_size = 1024.0 / content_length
+                    for chunk in r.iter_content(chunk_size=1024):
+                        fd.write(chunk)
+                        bar.update(bar.currval + chunk_size)
+                    urls_done += 1
+                    bar.update(urls_done * 10)
+
+        bar.finish()
 
     def main(self):
         self.import_engines(os.path.join(self.codedir, 'engines'))
@@ -70,8 +96,7 @@ class TVDownloader:
         
         self.download(d, outfile, self.args.insecure)
     
-    @classmethod
-    def download(cls, d, outfile, disable_ssl):
+    def download(self, d, outfile, disable_ssl):
         cmd = []
         if d[0] == 'rtmp':
             args = ''
@@ -91,21 +116,11 @@ class TVDownloader:
             cmd.append('rtmpdump -r "{}" -o "{}" {}'.format(parms['url'], outfile, args))
     
         elif d[0] == 'http':
-            wget_ssl_settings = ''
-            if disable_ssl:
-                wget_ssl_settings = '--no-check-certificate'
-
             if type(d[2]['url']) is list:
-                urlListFileName = '~tmp'
-                with open(urlListFileName, 'w') as urlListFile:
-                    for url in d[2]['url']:
-                        urlListFile.write(url + '\n')
-                cmd.append('wget {} -O "{}" -i "{}"'.format(wget_ssl_settings, d[1], urlListFileName))
-                cmd.append('rm "{}"'.format(urlListFileName))
-                cmd.append('del "{}"'.format(urlListFileName))
+                self.download_urls(d[2]['url'], outfile, disable_ssl)
             else:
-                cmd.append('wget {} -O "{}" "{}"'.format(wget_ssl_settings, d[1], d[2]['url']))
-            
+                self.download_urls([d[2]['url']], outfile, disable_ssl)
+
         elif d[0] == "text":
             open(outfile, 'wb').write(d[2])
             
