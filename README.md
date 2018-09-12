@@ -7,16 +7,20 @@ Závislosti
 ----------
 
 * Python >= 3.2
-* rtmpdump (http://rtmpdump.mplayerhq.hu/)
+* wget
+
+Podporované systémy
+-------------------
+
+* Linux
+* Windows
+    * wget není standardní součástí Windows, ale existuje několik způsobů, jak ho získat: GNUWin32, Cygwin, MinGW, Bash on Windows...
+* (Mac OS - netestováno, ale mělo by fungovat)
 
 Podporované archivy
 -------------------
 
 * ČT iVysílání (http://www.ceskatelevize.cz/ivysilani/)
-* Nova Voyo.cz (http://voyo.nova.cz/)
-* Show Jana Krause (http://www.iprima.cz/showjanakrause/videoarchiv)
-* TV Barrandov Archív (http://barrandov.tv/video)
-* TV Prima Videoarchiv (http://www.iprima.cz/videoarchiv/)
 
 Použití
 -------
@@ -24,9 +28,17 @@ Použití
 1. Najdi si v archivu pořad, který chceš stáhnout
 
 2. Spusť `tv-dl` a jako parametr mu dej URL stránky s pořadem, například:
-<pre>
-    ./tv-dl http://www.ceskatelevize.cz/ivysilani/10348527168-jak-na-ryby-s-rudou-hrusinskym/211562220200013-jak-na-ryby-s-rudou-hrusinskym/
-</pre>
+
+```
+./tv-dl http://www.ceskatelevize.cz/ivysilani/10348527168-jak-na-ryby-s-rudou-hrusinskym/211562220200013-jak-na-ryby-s-rudou-hrusinskym/
+```
+
+Pokud systém neumí najít interpret Pythonu 3, je nutné spouštět program takto (cesty je samozřejmě nutné přizpůsobit danému systému):
+
+```
+C:\Python3\python.exe C:\Users\me\tv-dl\tv-dl http://www.ceskatelevize.cz/ivysilani/10348527168-jak-na-ryby-s-rudou-hrusinskym/211562220200013-jak-na-ryby-s-rudou-hrusinskym/
+```
+
 3. Skript stáhne pořad v nejvyšší možné kvalitě.
 
 
@@ -41,15 +53,16 @@ Obdobně probíhá výběr videa ze stránky u Show Jana krause (parametr `-m`).
 
 ### Volby
 
-<pre>
-  -g, --get-url         nestahuje, použe vypíše URL adresu videa (dá se použít v některých přehrávačích)
-  -q QUALITY, --quality QUALITY
+    -g, --get-url
+                        nestahuje, použe vypíše URL adresu videa (dá se použít v některých přehrávačích)
+    -q QUALITY, --quality QUALITY
                         nastavuje kvalitu (list pro vypsání možností)
-  -m MOVIE, --movie MOVIE
+    -m MOVIE, --movie MOVIE
                         vybírá video ze stránky (list pro vypsání možností)
-  -o OUTPUT, --output OUTPUT
+    -o OUTPUT, --output OUTPUT
                         nastavuje výstupní soubor
-</pre>
+    -k, --insecure
+                        dovolí stahovat zabezpečené HTTPS stránky i přes problémy s certifikátem
 
 ### Skript tv-play
 
