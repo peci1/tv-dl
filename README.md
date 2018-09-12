@@ -19,6 +19,7 @@ Podporované archivy
 -------------------
 
 * ČT iVysílání (http://www.ceskatelevize.cz/ivysilani/)
+    * Od doby, co iVysílání technicky zajišťuje O2, je problém s ověřitelností bezpečnostních certifikátů serverů, odkud se video streamuje. Pro úspěšné stažení je nutné použít parametr `--insecure`, což ovšem snižuje bezpečnost přenosu. Stažená videa byste tak měli ověřit, zda neobsahují zákeřný kód, který by mohl zneužít přehrávač videa. Pravděpodobnost je sice velmi malá, ale nulová není.
 
 Použití
 -------
