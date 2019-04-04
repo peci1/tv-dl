@@ -93,7 +93,7 @@ class CtEngine:
         
     def getPlaylist(self, playlistUrl):
         rawData = urlopen(playlistUrl).read().decode('utf-8')
-        self.playlist = json.loads(rawData, 'utf-8')
+        self.playlist = json.loads(rawData, encoding='utf-8')
 
     def getMovie(self):
         self.movie = self.playlist['playlist'][0]
