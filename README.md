@@ -7,6 +7,7 @@ Závislosti
 ----------
 
 * Python >= 3.2
+* progressbar (nainstalujte přes pip3)
 
 Podporované systémy
 -------------------
